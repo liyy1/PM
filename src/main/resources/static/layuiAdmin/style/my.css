@@ -1,0 +1,36 @@
+/************iframe页面样式 begin*******************/
+.frame-content{
+    margin: 15px;
+    height: 100%;
+}
+/************iframe页面样式 end*********************/
+
+
+/************右侧弹出表单样式 begin*******************/
+.dialog-form{
+    border-top: 1px solid #ebebf0
+}
+.dialog-form .layui-card-header{
+    color: #009688;
+    border-bottom: 1px solid #ebebf0
+}
+.dialog-form .layui-row{
+    border-left: 1px solid #ebebf0;
+    border-bottom: 1px solid #ebebf0
+}
+.dialog-form .layui-col-md12{
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-right: 1px solid #ebebf0;
+}
+.dialog-form .layui-col-md6{
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-right: 1px solid #ebebf0;
+}
+.dialog-form span{
+    padding-bottom: 5px;
+}
+/************右侧弹出表单样式 end*******************/

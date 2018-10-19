@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.domor.dao.basic.RoleDao">
+
+	<select id="query" parameterType="map" resultType="map">
+		SELECT * FROM t_sys_role
+		<where>
+	    	<if test="delete_flag != null">
+	    		AND delete_flag = #{delete_flag}
+	    	</if>
+	    </where>
+        ORDER BY ${sort} ${order}
+	</select>
+
+    <select id="getRoleList" parameterType="map" resultType="com.domor.model.Role">
+        SELECT * FROM t_sys_role
+		<where>
+	    	<if test="delete_flag != null">
+	    		AND delete_flag = #{delete_flag}
+	    	</if>
+	    </where>
+    </select>
+	
+	<select id="findById" resultType="com.domor.model.Role" parameterType="int">
+		SELECT * FROM t_sys_role WHERE roleId = #{roleId}
+	</select>
+	<select id="getRole" parameterType="java.lang.String" resultType="java.util.HashMap">
+        select * from t_sys_role where roleName = #{roleName} and delete_flag = 0
+    </select>
+
+    <select id="getMenu" parameterType="java.lang.Integer" resultType="com.domor.model.Menu">
+        select * from t_sys_menu where menuId = #{menuId} and delete_flag = 0
+    </select>
+
+    <insert id="role_add" parameterType="com.domor.model.Role">
+        insert into t_sys_role(roleName,roleType, creator, createTime)
+        values(#{roleName}, #{roleType}, #{creator}, #{createTime})
+    </insert>
+
+    <update id="role_edit" parameterType="com.domor.model.Role">
+        update t_sys_role
+        set
+        roleName = #{roleName},
+        roleType = #{roleType},
+        delete_flag = #{delete_flag},
+        editor = #{editor},
+        editTime = #{editTime}
+        where
+        roleId = #{roleId}
+    </update>
+
+    <update id="role_del" parameterType="java.lang.Integer">
+        update t_sys_role set delete_flag = 1 where roleId =#{roleId}
+    </update>
+
+
+    <select id="isExistRight" resultType="java.lang.Integer">
+        select count(*) from t_sys_rights where roleId = #{param1} and menuId = #{param2}
+    </select>
+    
+    <insert id="addRight">
+        insert into t_sys_rights(roleId, menuId, delete_flag) values(#{param1}, #{param2}, 0)
+    </insert>
+    
+    <delete id="delRightByRoleId" parameterType="java.lang.Integer">
+        delete from t_sys_rights where roleId = #{roleId}
+    </delete>
+
+</mapper>

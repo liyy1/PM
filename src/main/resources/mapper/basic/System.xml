@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.domor.dao.basic.SystemDao">
+
+	<select id="getRoleMenus" resultType="com.domor.model.Menu" parameterType="int">
+    	SELECT a.* FROM t_sys_menu a
+		JOIN t_sys_rights b ON b.menuId = a.menuId
+		WHERE b.roleId = #{role}
+		AND a.delete_flag = 0
+		AND a.menuType = 1
+		ORDER BY a.menuOrder DESC, a.createTime ASC 
+    </select>
+    
+    <select id="getUser" resultType="com.domor.model.User" parameterType="String">
+		SELECT a.*,b.* FROM t_sys_user a
+        LEFT JOIN t_sys_role b ON a.role=b.roleId
+        WHERE (a.username=#{username} or a.phone=#{username})
+	</select>
+
+    <select id="getRoleActions" resultType="String" parameterType="int">
+		SELECT a.menuUrl FROM t_sys_menu a
+		LEFT JOIN t_sys_rights b on a.menuId=b.menuId
+        WHERE a.menuUrl is NOT NULL AND a.menuUrl!='' AND b.roleId = #{roleId}
+	</select>
+
+    <select id="getAllActions" resultType="String">
+		SELECT a.menuUrl FROM t_sys_menu a
+        WHERE a.menuUrl is NOT NULL AND a.menuUrl!=''
+	</select>
+
+</mapper>

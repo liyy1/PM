@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.domor.dao.basic.UserDao">
+
+	<select id="query" parameterType="map" resultType="map">
+		SELECT * FROM t_sys_user WHERE 0=0
+		<if test="name != null">
+			and concat(username,',',realname) like concat('%', #{name}, '%')
+		</if>
+		<if test="role != null" >
+			and role = #{role}
+		</if>
+		ORDER BY ${sort} ${order}
+	</select>
+
+	<select id="getByName" resultType="map" parameterType="String">
+		SELECT * FROM `t_sys_user` WHERE username=#{username}
+	</select>
+
+	<select id="getByPhone" resultType="int" parameterType="String">
+		SELECT count(1) FROM `t_sys_user` WHERE phone=#{phone}
+	</select>
+
+	<select id="generatUsername" resultType="String" parameterType="String">
+		SELECT CONCAT(#{str}, IFNULL(LPAD(RIGHT(MAX(`username`),5)+1,5,0),'00001')) username FROM t_sys_user WHERE username like concat(#{str}, '%')
+	</select>
+
+	<insert id="insert" parameterType="map">
+		INSERT INTO t_sys_user(username, password, realname,dept,deptName, role, roleName, sex, phone, creator, createTime)
+		VALUES(#{username}, #{password}, #{realname}, #{dept},#{deptName},#{role}, #{roleName}, #{sex}, #{phone}, #{loginUser}, now())
+	</insert>
+	
+	<update id="update" parameterType="map">
+		UPDATE t_sys_user 
+		SET 
+			realname = #{realname},
+			sex = #{sex},
+			dept = #{dept},
+			deptName = #{deptName},
+			role = #{role},
+			roleName = #{roleName},
+			delete_flag = #{delete_flag},
+			editor = #{loginUser}, 
+			editTime = now()
+		WHERE  username = #{username}
+	</update>
+	
+	<delete id="delete" parameterType="map">
+		UPDATE t_sys_user SET
+			delete_flag = 1,
+			editor = #{loginUser},
+			editTime = now()
+		WHERE  username = #{username}
+	</delete>
+	
+	<update id="initUserPwd" parameterType="java.util.Map">
+		UPDATE t_sys_user SET password = #{password} WHERE  username = #{username}
+	</update>
+
+</mapper>

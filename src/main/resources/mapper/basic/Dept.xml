@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.domor.dao.basic.DeptDao">
+
+    <insert id="insert" parameterType="map">
+		INSERT INTO `t_sys_dept` (`name`,`parentId`, `deptLevel`, `memo`,`creator`,`creatTime`,delete_flag)
+		VALUES (#{name}, #{parentId}, #{deptLevel}, #{memo}, #{creator}, NOW(),0)
+	</insert>
+	
+	<update id="update" parameterType="map">
+		UPDATE `t_sys_dept` 
+		SET 	
+	      `name`=#{name},parentId=#{parentId}, deptLevel=#{deptLevel}, `memo`=#{memo} ,
+	      `editor`=#{editor}, `editTime`=NOW(), delete_flag=#{delete_flag}
+	   WHERE  
+	   	  id = #{id}
+	</update>
+ 
+	<select id="findById" parameterType="int" resultType="com.domor.model.Dept">
+		SELECT * FROM  `t_sys_dept`  
+		<where>
+		  <if test="_parameter != null and _parameter != ''">
+				id = #{_parameter}
+		  </if>
+		</where>
+		
+	</select>
+	
+
+ 
+	
+	<select id="getNewCode1" resultType="String" >
+	   SELECT  LPAD(CONVERT(IFNULL(SUBSTRING(max(`code`),1,3),'000'),SIGNED)+1 ,3 ,0) newCode FROM `t_sys_dept` where grade = 1
+	</select>
+	
+    <select id="getNewCode2" resultType="String" >
+		   SELECT CONCAT(#{pcode} ,  LPAD(CONVERT(IFNULL(SUBSTRING(max(`code`),4,2),'00'),SIGNED)+1 ,2 ,0)) newCode FROM `t_sys_dept`
+		    where grade = 2 and pcode = #{pcode} 
+	</select>
+ 
+	
+	<select id="getChildDepts" resultType="map" >
+		SELECT * FROM t_sys_dept 
+	</select>
+	
+	
+	<select id="getDeptForComb" resultType="map" >
+		select bb.* from (SELECT a.* from t_sys_dept a join `t_sys_user` b on a.`code` = b.dept and b.username=#{param1}) aa
+		join t_sys_dept bb on aa.code = bb.pcode or aa.code = bb.code
+		<where>
+		  <if test="param2 != null and param2 != ''">
+				bb.areaId = #{param2}
+		  </if>
+		</where>
+		order by bb.grade,bb.code
+	</select>
+
+	<select id="getAreaTreeData" resultType="map" >
+		select * from t_sys_area order by `level`, `id`
+	</select>
+	
+    <select id="getChildDeptsForTree"  parameterType="map" resultType="map" >
+    	SELECT * FROM t_sys_dept 
+    	<!-- WHERE username=#{username}
+	    <if test="name != null and name != ''">
+	   	 	and name like concat('%',#{name}, '%')
+	    </if>
+	 	order by a.grade,a.code -->
+	</select>
+	
+	<select id="query" parameterType="map" resultType="com.domor.model.Dept">
+		SELECT * FROM t_sys_dept
+		<where>
+			<if test="parentId != null">
+				AND parentId = #{parentId}
+			</if>
+			<if test="delete_flag != null">
+				AND delete_flag = #{delete_flag}
+			</if>
+			<if test="deptName != null and deptName!=''">
+				AND name like '%' + #{deptName} + '%'
+			</if>
+			<if test="deptLevel != null">
+				AND deptLevel &lt;= #{deptLevel}
+			</if>
+		</where>
+		<if test="sort != null and order != null">
+	    	ORDER BY ${sort} ${order}
+	    </if>
+	</select>
+	
+</mapper>
